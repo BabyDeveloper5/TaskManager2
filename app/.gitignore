@@ -1,1 +1,31 @@
-/build
+# Gradle files
+.gradle/
+build/
+*/build/
+
+# Local configuration
+local.properties
+
+# IDE files
+.idea/
+*.iml
+
+# Log and temp files
+*.log
+*.tmp
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Keystore files (security)
+*.jks
+
+# Kotlin compile stuff
+.kotlinc/
+
+# Jetpack Compose previews cache
+androidx.compose.ui.tooling.preview/
+
+# DataStore Preferences (optional, if generated on device)
+*.preferences_pb

@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -32,10 +31,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TaskScreen(viewModel: TaskViewModel, onAddTaskClick :() -> Unit){
+fun TaskScreen(viewModel: TaskViewModel = hiltViewModel(), onAddTaskClick :() -> Unit){
 
     val tasks by viewModel.allTasks.collectAsState()
     Scaffold(
@@ -54,18 +54,17 @@ fun TaskScreen(viewModel: TaskViewModel, onAddTaskClick :() -> Unit){
         }
     ) {paddingValues ->
         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ){
-            items(tasks) {task->
+            contentPadding = paddingValues,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            items(tasks) { task ->
                 TaskItem(
                     task = task,
-                    onDelete = {viewModel.deleteTask(task)},
-                    onToggleDone = {
-                        viewModel.upsertTask(task.copy(isDone = !task.isDone))
+                    onToggleDone = { isChecked ->
+                        viewModel.upsertTask(task.copy(isDone = isChecked))
+                    },
+                    onDelete = {
+                        viewModel.deleteTask(task)
                     }
                 )
             }
@@ -77,7 +76,7 @@ fun TaskScreen(viewModel: TaskViewModel, onAddTaskClick :() -> Unit){
 fun TaskItem(
     task: Task,
     onDelete: () -> Unit,
-    onToggleDone: () -> Unit
+    onToggleDone: (Boolean) -> Unit
 ){
     Card(modifier = Modifier
         .fillMaxWidth()

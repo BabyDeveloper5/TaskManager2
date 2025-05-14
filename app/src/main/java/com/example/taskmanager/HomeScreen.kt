@@ -35,7 +35,7 @@ fun HomeScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Counter(onLock, onReset)
+
         }
     }
 }
