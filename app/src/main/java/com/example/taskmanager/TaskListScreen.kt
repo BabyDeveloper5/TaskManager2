@@ -1,6 +1,7 @@
 package com.example.taskmanager
 
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -62,6 +63,7 @@ fun TaskListScreen(
 
     // Scaffold to display the app's layout
     Scaffold(
+
         topBar = {
             TopAppBar(
                 title = { Text(text = "Task List") }
@@ -78,7 +80,7 @@ fun TaskListScreen(
     ) { paddingValues ->
         LazyColumn(
             contentPadding = paddingValues,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize().background(Color(0xffe9f5db)),
         ) {
             items(tasks) { task ->
                 TaskItem(
@@ -147,7 +149,7 @@ fun TaskItem(
             .clickable { showDescriptionDialog = !showDescriptionDialog },
         elevation = CardDefaults.cardElevation(4.dp),
         colors = if (task.isDone) CardDefaults.cardColors(Color(0xFFcaffbf))
-        else CardDefaults.cardColors(Color(0xFFffadad))
+        else CardDefaults.cardColors(Color(0xFFfae6e7))
     ) {
         Column(modifier = Modifier.fillMaxWidth().animateContentSize().padding(16.dp)
         ) {

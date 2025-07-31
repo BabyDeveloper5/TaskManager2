@@ -22,20 +22,6 @@ class MainActivity : ComponentActivity() {
             val lockViewModel: LockViewModel = viewModel()
             val taskViewModel: TaskViewModel = viewModel()
 
-            /*val navController = rememberNavController()
-
-            NavHost(navController = navController, startDestination = "task") {
-                composable("task") {
-                    val viewModel: TaskViewModel = hiltViewModel()
-                    TaskScreen(
-                        viewModel = viewModel,
-                        onAddTaskClick = {
-                            // Later: Navigate to a task creation screen
-                        }
-                    )
-                }
-
-            }*/
             TaskManagerApp(lockViewModel)
         }
     }
