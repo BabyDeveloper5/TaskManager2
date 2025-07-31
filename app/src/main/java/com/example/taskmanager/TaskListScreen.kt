@@ -1,10 +1,16 @@
 package com.example.taskmanager
 
+import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -50,6 +56,9 @@ fun TaskListScreen(
     // State to manage the confirmation dialog visibility
     var showDeleteDialog by remember { mutableStateOf(false) }
     var taskToDelete by remember { mutableStateOf<Task?>(null) }
+
+
+
 
     // Scaffold to display the app's layout
     Scaffold(
@@ -128,20 +137,19 @@ fun TaskItem(
     onDelete: () -> Unit,
     onToggleDone: (Boolean) -> Unit
 ) {
+    // State to manage the description dialog visibility
+    var showDescriptionDialog by remember { mutableStateOf(false) }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp),
+            .padding(8.dp)
+            .clickable { showDescriptionDialog = !showDescriptionDialog },
         elevation = CardDefaults.cardElevation(4.dp),
         colors = if (task.isDone) CardDefaults.cardColors(Color(0xFFcaffbf))
         else CardDefaults.cardColors(Color(0xFFffadad))
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
+        Column(modifier = Modifier.fillMaxWidth().animateContentSize().padding(16.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -166,6 +174,13 @@ fun TaskItem(
                         contentDescription = "Delete"
                     )
                 }
+            }
+            if (showDescriptionDialog){
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = task.description,
+                    fontSize = 16.sp
+                )
             }
         }
     }
