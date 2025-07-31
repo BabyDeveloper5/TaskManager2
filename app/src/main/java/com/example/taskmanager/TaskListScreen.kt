@@ -13,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -28,9 +29,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -81,10 +85,13 @@ fun TaskItem(
     onDelete: () -> Unit,
     onToggleDone: (Boolean) -> Unit
 ){
-    Card(modifier = Modifier
-        .fillMaxWidth()
-        .padding(8.dp),
-        elevation = CardDefaults.cardElevation(4.dp)
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+        elevation = CardDefaults.cardElevation(4.dp),
+        colors = if (task.isDone) CardDefaults.cardColors(Color(0xFFcaffbf))
+        else CardDefaults.cardColors(Color(0xFFffadad))
     ) {
         Row(modifier = Modifier
             .fillMaxWidth()
@@ -93,15 +100,18 @@ fun TaskItem(
             horizontalArrangement = Arrangement.Center
         ){
             Row (
-                verticalAlignment = Alignment.CenterVertically
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
             ){
                 Checkbox(
                     checked = task.isDone,
                     onCheckedChange = onToggleDone
                 )
-                Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = task.title,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
                     style = if(task.isDone) TextStyle(
                         textDecoration = TextDecoration.LineThrough)
                     else LocalTextStyle.current
