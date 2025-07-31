@@ -2,18 +2,17 @@ package com.example.taskmanager
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -27,6 +26,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -41,10 +43,15 @@ import androidx.hilt.navigation.compose.hiltViewModel
 @Composable
 fun TaskListScreen(
     taskViewModel: TaskViewModel = hiltViewModel(),
-    onAddTaskClick :() -> Unit
-){
-
+    onAddTaskClick: () -> Unit
+) {
     val tasks by taskViewModel.allTasks.collectAsState()
+
+    // State to manage the confirmation dialog visibility
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    var taskToDelete by remember { mutableStateOf<Task?>(null) }
+
+    // Scaffold to display the app's layout
     Scaffold(
         topBar = {
             TopAppBar(
@@ -52,14 +59,14 @@ fun TaskListScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = onAddTaskClick ) {
+            FloatingActionButton(onClick = onAddTaskClick) {
                 Icon(
                     imageVector = Icons.Filled.Add,
                     contentDescription = "Add Task"
                 )
             }
         }
-    ) {paddingValues ->
+    ) { paddingValues ->
         LazyColumn(
             contentPadding = paddingValues,
             modifier = Modifier.fillMaxSize()
@@ -71,10 +78,46 @@ fun TaskListScreen(
                         taskViewModel.upsertTask(task.copy(isDone = isChecked))
                     },
                     onDelete = {
-                        taskViewModel.deleteTask(task)
+                        // When delete is clicked, show the confirmation dialog
+                        taskToDelete = task
+                        showDeleteDialog = true
                     }
                 )
             }
+        }
+
+        // Show the confirmation dialog if needed
+        if (showDeleteDialog && taskToDelete != null) {
+            AlertDialog(
+                onDismissRequest = {
+                    // Close dialog when clicking outside
+                    showDeleteDialog = false
+                    taskToDelete = null
+                },
+                title = { Text("Confirm Deletion") },
+                text = { Text("Are you sure you want to delete the task '${taskToDelete?.title}'?") },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            taskViewModel.deleteTask(taskToDelete!!) // Delete the task
+                            showDeleteDialog = false
+                            taskToDelete = null // Reset task to delete
+                        }
+                    ) {
+                        Text("Confirm")
+                    }
+                },
+                dismissButton = {
+                    Button(
+                        onClick = {
+                            showDeleteDialog = false
+                            taskToDelete = null // Reset task to delete
+                        }
+                    ) {
+                        Text("Cancel")
+                    }
+                }
+            )
         }
     }
 }
@@ -84,7 +127,7 @@ fun TaskItem(
     task: Task,
     onDelete: () -> Unit,
     onToggleDone: (Boolean) -> Unit
-){
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -93,17 +136,18 @@ fun TaskItem(
         colors = if (task.isDone) CardDefaults.cardColors(Color(0xFFcaffbf))
         else CardDefaults.cardColors(Color(0xFFffadad))
     ) {
-        Row(modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
-        ){
-            Row (
+        ) {
+            Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
-            ){
+            ) {
                 Checkbox(
                     checked = task.isDone,
                     onCheckedChange = onToggleDone
@@ -112,9 +156,9 @@ fun TaskItem(
                     text = task.title,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
-                    style = if(task.isDone) TextStyle(
-                        textDecoration = TextDecoration.LineThrough)
-                    else LocalTextStyle.current
+                    style = if (task.isDone) TextStyle(
+                        textDecoration = TextDecoration.LineThrough
+                    ) else LocalTextStyle.current
                 )
                 IconButton(onClick = onDelete) {
                     Icon(
