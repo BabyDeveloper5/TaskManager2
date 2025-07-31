@@ -9,7 +9,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.taskmanager.ui.theme.TaskManagerTheme
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -47,11 +46,13 @@ fun TaskManagerApp(lockViewModel: LockViewModel){
 
     val navController = rememberNavController()
     val isUnlocked by lockViewModel.isUnlocked.collectAsState()
+    val taskViewModel: TaskViewModel = hiltViewModel()
+
 
 
     LaunchedEffect(isUnlocked) {
         if (isUnlocked) {
-            navController.navigate(Screen.TaskScreen.route) {
+            navController.navigate(Screen.TaskListScreen.route) {
                 popUpTo(Screen.Lock.route) { inclusive = true }
             }
         }else{
@@ -65,18 +66,27 @@ fun TaskManagerApp(lockViewModel: LockViewModel){
     NavHost(
         navController = navController,
         startDestination = if (isUnlocked) Screen.Lock.route
-        else Screen.TaskScreen.route
+        else Screen.TaskListScreen.route
     ){
         composable(Screen.Lock.route){
             LockScreen(onUnlock = { lockViewModel.unlock() })
         }
 
-        composable(Screen.TaskScreen.route){
-            val viewModel: TaskViewModel = hiltViewModel()
-            TaskScreen(
-                viewModel = viewModel,
+        composable(Screen.TaskListScreen.route){
+            TaskListScreen(
+                taskViewModel = taskViewModel,
                 onAddTaskClick = {
                     // Later: Navigate to a task creation screen
+                    navController.navigate(Screen.AddTask.route)
+                }
+            )
+        }
+
+        composable(Screen.AddTask.route){
+            AddTaskScreen(
+                onSave = {title, description ->
+                taskViewModel.addTask(title, description)
+                navController.popBackStack()
                 }
             )
         }

@@ -35,9 +35,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TaskScreen(viewModel: TaskViewModel = hiltViewModel(), onAddTaskClick :() -> Unit){
+fun TaskListScreen(
+    taskViewModel: TaskViewModel = hiltViewModel(),
+    onAddTaskClick :() -> Unit
+){
 
-    val tasks by viewModel.allTasks.collectAsState()
+    val tasks by taskViewModel.allTasks.collectAsState()
     Scaffold(
         topBar = {
             TopAppBar(
@@ -45,7 +48,7 @@ fun TaskScreen(viewModel: TaskViewModel = hiltViewModel(), onAddTaskClick :() ->
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick =  onAddTaskClick ) {
+            FloatingActionButton(onClick = onAddTaskClick ) {
                 Icon(
                     imageVector = Icons.Filled.Add,
                     contentDescription = "Add Task"
@@ -61,10 +64,10 @@ fun TaskScreen(viewModel: TaskViewModel = hiltViewModel(), onAddTaskClick :() ->
                 TaskItem(
                     task = task,
                     onToggleDone = { isChecked ->
-                        viewModel.upsertTask(task.copy(isDone = isChecked))
+                        taskViewModel.upsertTask(task.copy(isDone = isChecked))
                     },
                     onDelete = {
-                        viewModel.deleteTask(task)
+                        taskViewModel.deleteTask(task)
                     }
                 )
             }
@@ -94,7 +97,7 @@ fun TaskItem(
             ){
                 Checkbox(
                     checked = task.isDone,
-                    onCheckedChange = { onToggleDone }
+                    onCheckedChange = onToggleDone
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(

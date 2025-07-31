@@ -36,4 +36,11 @@ class TaskViewModel( application: Application ): AndroidViewModel(application){
         }
     }
 
+    fun addTask(title:String, description: String){
+        viewModelScope.launch {
+            val newTask = Task(title= title, description= description)
+            repository.upsert(newTask)
+        }
+    }
+
 }
